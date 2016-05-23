@@ -30,14 +30,16 @@ x = tf.placeholder("float", [None, 4])
 y_ = tf.placeholder("float", [None, 3])
 
 
-W = tf.Variable(np.float32(np.random.rand(4, 3))*0.1)
-b = tf.Variable(np.float32(np.random.rand(3))*0.1)
+W1 = tf.Variable(np.float32(np.random.rand(4, 5))*0.1)
+W2 = tf.Variable(np.float32(np.random.rand(5, 3))*0.1)
+b1 = tf.Variable(np.float32(np.random.rand(5))*0.1)
+b2 = tf.Variable(np.float32(np.random.rand(3))*0.1)
 
-y = tf.nn.softmax((tf.sigmoid(tf.matmul(x, W) + b)))
+oculta = tf.sigmoid(tf.matmul(x, W1) + b1)
+y = tf.nn.softmax(((tf.matmul(oculta, W2) + b2)))
 
-
-#cross_entropy = tf.reduce_sum(tf.square(y_ - y))
-cross_entropy = -tf.reduce_sum(y_*tf.log(y))
+cross_entropy = tf.reduce_sum(tf.square(y_ - y))
+#cross_entropy = -tf.reduce_sum(y_*tf.log(y))
 
 train = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
@@ -62,7 +64,6 @@ for step in px:
 
         error = sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys})
 
-        sess.run(train, feed_dict={x: batch_xs, y_: batch_ys})
         if step % 50 == 0:
             print "Iteration #:", step, "Error: ", error
             print sess.run(y, feed_dict={x: batch_xs})
@@ -76,5 +77,5 @@ plt.xlabel('Iteration')
 plt.ylabel('Error')
 plt.title('Error')
 plt.grid(True)
-plt.savefig('error-monocapa.png')
+plt.savefig('error-multicapa.png')
 plt.show()
